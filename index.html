@@ -914,7 +914,7 @@
       // 2. TEMPO EM SEGUNDOS PARA O BOTÃO APARECER:
       //    0   = Aparece IMEDIATAMENTE (ideal para você testar)
       //    840 = 14 minutos (padrão de VSL em tráfego pago)
-      ctaDelaySeconds: 0,
+      ctaDelaySeconds: 840, // 14 minutos (840 segundos - tempo exato do pitch da VSL)
 
       // 3. TEXTO DO BOTÃO DE COMPRA:
       ctaButtonText: 'QUERO MEU PLANO PERSONALIZADO · R$ 67,00 →',
@@ -984,7 +984,11 @@
 
         buildCheckoutLink();
 
-        if (CONFIG.ctaDelaySeconds <= 0) {
+        // Permite testar imediatamente usando ?teste=1 na URL sem ter que esperar 14 minutos
+        const urlParams = new URLSearchParams(window.location.search);
+        const effectiveDelay = (urlParams.get('teste') === '1' || urlParams.get('delay') === '0') ? 0 : CONFIG.ctaDelaySeconds;
+
+        if (effectiveDelay <= 0) {
           wrap.classList.add('is-in');
           if (wait) wait.style.display = 'none';
           return;
@@ -996,7 +1000,7 @@
           wrap.classList.add('is-in');
           if (wait) wait.style.display = 'none';
           wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, CONFIG.ctaDelaySeconds * 1000);
+        }, effectiveDelay * 1000);
       }
 
       // Exibe a tela selecionada e atualiza a barra de progresso
